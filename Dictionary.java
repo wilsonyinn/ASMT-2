@@ -167,40 +167,24 @@ public enum Dictionary{
                 }
                 else{
                     System.out.println("   |");
-                    System.out.println("   <The entered 3nd parameter '" + splitString[2] + "' is NOT 'distinct'.>");
-                    System.out.println("   <The entered 3nd parameter '" + splitString[2] + "' is NOT 'reverse'.>");
-                    System.out.println("   <The entered 3nd parameter '" + splitString[2] + "' was disregarded.>");
-                    System.out.println("   <The 3nd parameter should be 'distinct' or 'reverse'.>");
+                    System.out.println("   <The entered 3rd parameter '" + splitString[2] + "' is NOT 'distinct'.>");
+                    System.out.println("   <The entered 3rd parameter '" + splitString[2] + "' is NOT 'reverse'.>");
+                    System.out.println("   <The entered 3rd parameter '" + splitString[2] + "' was disregarded.>");
+                    System.out.println("   <The 3rd parameter should be 'distinct' or 'reverse'.>");
                     System.out.println("   |");
 
                 }
             }
-            if (splitString.length > 2 && splitString[2] != null) {
-                if (splitString[2].equalsIgnoreCase("distinct")) {
-                    isDistinct = true;
-                }
-                else if (splitString[2].equalsIgnoreCase("reverse")){
-                    isReverse = true;
-                }
-                else{
-                    System.out.println("   |");
-                    System.out.println("   <The entered 3nd parameter '" + splitString[2] + "' is NOT 'distinct'.>");
-                    System.out.println("   <The entered 3nd parameter '" + splitString[2] + "' is NOT 'reverse'.>");
-                    System.out.println("   <The entered 3nd parameter '" + splitString[2] + "' was disregarded.>");
-                    System.out.println("   <The 3nd parameter should be 'distinct' or 'reverse'.>");
-                    System.out.println("   |");
-   
-                }
-            }
+
             if (splitString.length > 3 && splitString[3] != null) {
                 if (splitString[3].equalsIgnoreCase("reverse")){
                     isReverse = true;
                 }
                 else{
                     System.out.println("   |");
-                    System.out.println("   <The entered 3nd parameter '" + splitString[3] + "' is NOT 'reverse'.>");
-                    System.out.println("   <The entered 3nd parameter '" + splitString[3] + "' was disregarded.>");
-                    System.out.println("   <The 3nd parameter should be 'reverse'.>");
+                    System.out.println("   <The entered 4th parameter '" + splitString[3] + "' is NOT 'reverse'.>");
+                    System.out.println("   <The entered 4th parameter '" + splitString[3] + "' was disregarded.>");
+                    System.out.println("   <The 4th parameter should be 'reverse'.>");
                     System.out.println("   |");
 
                 } 
@@ -220,11 +204,12 @@ public enum Dictionary{
             if (!input.equalsIgnoreCase("!q") && (!input.equalsIgnoreCase("!help"))){
                 System.out.println("   |");
                 ArrayList<Dictionary> result1 = map.get(searchWord.toUpperCase());  //holds all the values associated to key
-                ArrayList<Dictionary> result2 = (isDistinct) ? partOfSpeechFilter(result1) : result1;  //distinct or speech filter
-                ArrayList<Dictionary> result3 = (speech != null) ? sameSpeechResolver(result2, speech) : result2;
+                ArrayList<Dictionary> result2 = (isDistinct) ? distinctFilter(result1) : result1;  //distinct
+                ArrayList<Dictionary> result3 = (speech != null) ? speechFilter(result2, speech) : result2;
+                ArrayList<Dictionary> result4 = (isReverse) ? reverseFilter(result3) : result3;
                 
-                if (result3 != null && result3.size() > 0){
-                    for (Dictionary key : result3){
+                if (result4 != null && result4.size() > 0){
+                    for (Dictionary key : result4){
                         System.out.println("    " + key);
                     }
                 }
@@ -245,32 +230,26 @@ public enum Dictionary{
        System.out.println("    1. A search key -then 2. An options part of speech - then");
        System.out.println("    3. An optional 'distinct' -then 4. An optional 'reverse'");
    }
-   public static ArrayList<Dictionary> partOfSpeechFilter(ArrayList<Dictionary> dict){
-       HashMap<String, Dictionary> map = new HashMap<String, Dictionary>();
+   public static ArrayList<Dictionary> distinctFilter(ArrayList<Dictionary> dict){
+       ArrayList<Dictionary> result = new ArrayList<Dictionary>();
        if (dict != null){
+            String speech = "adjective";
+            ArrayList<String> dummy = new ArrayList<String>();
            for (Dictionary dictionary : dict){
-               String speech = dictionary.getSpeech(); //check speech & definition
-               if(!map.containsValue(dictionary)){
-                   map.put(speech, dictionary);
-                   System.out.println("Map: " + map);
-               }
-               System.out.println();
+                if (speech != dictionary.getSpeech()){
+                    speech = dictionary.getSpeech();
+                    dummy.clear();
+                }
+                if (!dummy.contains(dictionary.getDefinition())){
+                    result.add(dictionary);
+                    dummy.add(dictionary.getDefinition());
+                }
            }
        }
-       return new ArrayList<Dictionary>(map.values());
+       return result;
    }
 
-   //if (map.containsKey(word)){
-    //ArrayList<Dictionary> list = map.get(word);
-    //list.add(dictionary);
-    //map.put(word, list);
-//}
-//else{
-    //ArrayList<Dictionary> list = new ArrayList<Dictionary>();
-    //list.add(dictionary);
-    //map.put(word, list);
-//}
-   public static ArrayList<Dictionary> sameSpeechResolver(ArrayList<Dictionary> dict, String speech) {
+   public static ArrayList<Dictionary> speechFilter(ArrayList<Dictionary> dict, String speech) {
         ArrayList<Dictionary> result = new ArrayList<Dictionary>();
         if (dict != null){
            for (Dictionary dictionary : dict){
@@ -282,8 +261,11 @@ public enum Dictionary{
        return result;
    }
 
+   public static ArrayList<Dictionary> reverseFilter(ArrayList<Dictionary> dict){     
+        ArrayList<Dictionary> revArrayList = new ArrayList<Dictionary>();
+        for (int i = dict.size() - 1; i >= 0; i--) {
+            revArrayList.add(dict.get(i));
+        }
+        return revArrayList;
+   }
 }
-
- 
-
-
